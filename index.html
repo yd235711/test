@@ -1,30 +1,31 @@
 <!doctype HTML>
 <html>
-<!-- A-Frame ƒ‰ƒCƒuƒ‰ƒŠ‚Ì“Ç‚Ýž‚Ý -->
+<!-- A-Frame ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã®èª­ã¿è¾¼ã¿ -->
 <script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script>
-<!-- AR.js ƒ‰ƒCƒuƒ‰ƒŠ‚Ì“Ç‚Ýž‚Ý -->
+<!-- AR.js ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã®èª­ã¿è¾¼ã¿ -->
 <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/1.5.0/aframe/build/aframe-ar.js"></script>
 <body style='margin:0px; overflow:hidden;'>
-<!-- ‚±‚Á‚©‚çA-Frame -->
+<!-- ã“ã£ã‹ã‚‰A-Frame -->
 <a-scene embedded arjs="debugUIEnabled:false;trackingMethod:best;" vr-mode-ui="enabled: false">
-    <!-- ƒIƒuƒWƒFƒNƒgƒtƒ@ƒCƒ‹‚Æƒ}ƒeƒŠƒAƒ‹ƒtƒ@ƒCƒ‹‚ð“Ç‚Ýž‚Þ -->
+    <!-- ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã¨ãƒžãƒ†ãƒªã‚¢ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã‚€ -->
     <a-assets>
         <a-asset-item id="santa-obj" src="model_obj/santa/santa.obj"></a-asset-item>
         <a-asset-item id="santa-mtl" src="model_obj/santa/santa.mtl"></a-asset-item>
-        <a-asset-item id="philip-obj" src="model_obj/philip/newphilip1.fbx"></a-asset-item>
+        <a-asset-item id="philip-obj" src="model_obj/philip/newphilip1.obj"></a-asset-item>
+        <a-asset-item id="philip-mtl" src="model_obj/philip/newphilip1.mtl"></a-asset-item>
     </a-assets>
-    <!-- ‚±‚Á‚©‚çAR‚Ì¢ŠEBƒ}[ƒJ[ã‚É‚È‚É‚ð“WŠJ‚·‚é‚©‚ð‘‚­ -->
+    <!-- ã“ã£ã‹ã‚‰ARã®ä¸–ç•Œã€‚ãƒžãƒ¼ã‚«ãƒ¼ä¸Šã«ãªã«ã‚’å±•é–‹ã™ã‚‹ã‹ã‚’æ›¸ã -->
     <a-marker preset="hiro">
         <a-obj-model id="santa" src="#santa-obj" mtl="#santa-mtl" position="0 0 0" scale="0.5 0.5 0.5" rotation="0 0 0"></a-obj-model>
-        <a-text value="Hello YouTubeI!I" position="0 1.3 0" align="center"></a-text>
+        <a-text value="Hello YouTubeï¼!ï¼" position="0 1.3 0" align="center"></a-text>
     </a-marker>
     <a-marker type='pattern' url='./marker/pattern-0001.patt'>
-        <a-obj-model id="philip" src="#philip-obj" position="0 0 0" scale="0.5 0.5 0.5" rotation="0 0 0"></a-obj-model>
-        <a-text value="Hello YouTubeI!I" position="0 1.3 0" align="center"></a-text>
+        <a-obj-model id="philip" src="#philip-obj" mtl="#philip-mtl" position="0 0 0" scale="0.5 0.5 0.5" rotation="0 0 0"></a-obj-model>
+        <a-text value="Hello YouTubeï¼!ï¼" position="0 1.3 0" align="center"></a-text>
     </a-marker>
-    <!-- ar‚È‚Ì‚Å‚±‚ñ‚ÈŠ´‚¶‚ÅƒJƒƒ‰‚ª•K—v‚ç‚µ‚¢B -->
+    <!-- arãªã®ã§ã“ã‚“ãªæ„Ÿã˜ã§ã‚«ãƒ¡ãƒ©ãŒå¿…è¦ã‚‰ã—ã„ã€‚ -->
     <a-entity camera></a-entity>
 </a-scene>
-<!-- ‚±‚±‚Ü‚Å‚ÅA-Frame‚¨‚í‚è -->
+<!-- ã“ã“ã¾ã§ã§A-FrameãŠã‚ã‚Š -->
 </body>
 </html>

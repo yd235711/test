@@ -92,8 +92,7 @@ document.getElementById('searchBtn').addEventListener('click', function() {
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">色</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">サイズ</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">箱番</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">商品名</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">下３桁</th>
+                            
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -104,6 +103,12 @@ document.getElementById('searchBtn').addEventListener('click', function() {
                                 <td class="px-6 py-4 whitespace-nowrap">${item.color}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">${item.size}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">${item.boxNumber}</td>
+                            </tr>
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">商品名</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">下３桁</th>
+                            </tr>
+                            <tr>
                                 <td class="px-6 py-4 whitespace-nowrap">${item.productName}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">${item.lastThreeDigits}</td>
                             </tr>

@@ -1,52 +1,120 @@
-<!doctype HTML>
-<html>
-<!-- A-Frame ライブラリの読み込み -->
-<script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script>
-<!-- AR.js ライブラリの読み込み -->
-<script src="https://cdn.rawgit.com/jeromeetienne/AR.js/1.6.2/aframe/build/aframe-ar.js"></script>
-<body style='margin:0px; overflow:hidden;'>
-<!-- こっからA-Frame -->
-<!--<a-scene embedded arjs="debugUIEnabled:false;trackingMethod:best;" vr-mode-ui="enabled: false">-->
-    <a-scene embedded arjs="debugUIEnabled:false;">
-    <!-- オブジェクトファイルとマテリアルファイルを読み込む -->
-    <a-assets>
-        <a-asset-item id="santa-obj" src="model_obj/santa/santa.obj"></a-asset-item>
-        <a-asset-item id="santa-mtl" src="model_obj/santa/santa.mtl"></a-asset-item>
-        <a-asset-item id="philip-obj" src="model_obj/philip/newphilip1.obj"></a-asset-item>
-        <!--<a-asset-item id="philip-mtl" src="model_obj/philip/newphilip1.mtl"></a-asset-item>-->
-        <a-asset-item id="s-obj" src="model_obj/vloid/s.obj"></a-asset-item>
-        <a-asset-item id="s-mtl" src="model_obj/vloid/s.mtl"></a-asset-item>
-        <a-asset-item id="snow-obj" src="model_obj/snow/snow.obj"></a-asset-item>
-        <a-asset-item id="yukidaruma-obj" src="model_obj/yukidaruma/yukidaruma.obj"></a-asset-item>
-        <a-asset-item id="yukidaruma-mtl" src="model_obj/yukidaruma/yukidaruma.mtl"></a-asset-item>
-    </a-assets>
-    <!-- こっからARの世界。マーカー上になにを展開するかを書く -->
-    <a-marker preset="hiro">
-        
-        <!--<a-obj-model id="philip" src="#philip-obj" position="0 0 0" scale="0.5 0.5 0.5" rotation="0 0 0"></a-obj-model>
-        <a-text value="Hello YouTube！!！" position="0 1.3 0" align="center"></a-text>-->
-        <!--<a-obj-model id="snow" src="#snow-obj" position="0 0 0" scale="0.5 0.5 0.5" rotation="0 0 0"></a-obj-model>
-        <a-text value="Hello YouTube！!！" position="0 1.3 0" align="center"></a-text>-->
-        <a-obj-model id="yukidaruma" src="#yukidaruma-obj" mtl="#yukidaruma-mtl" position="0 0 0" scale="0.5 0.5 0.5" rotation="0 0 0"></a-obj-model>
-    </a-marker>
-    <a-marker type='pattern' url='./marker/pattern-0001.patt'>
-        <a-obj-model id="santa" src="#santa-obj" mtl="#santa-mtl" position="0 0 0" scale="0.5 0.5 0.5" rotation="0 0 0"></a-obj-model>
-        <a-text value="Hello YouTube！!！" position="0 1.3 0" align="center"></a-text>
-    </a-marker>
-    <a-marker type='pattern' url='./marker/pattern-0001.patt'>
-        <a-obj-model id="santa" src="#santa-obj" mtl="#santa-mtl" position="0 0 0" scale="0.5 0.5 0.5" rotation="0 0 0"></a-obj-model>
-        <a-text value="Hello YouTube！!！" position="0 1.3 0" align="center"></a-text>
-    </a-marker>
-    <a-marker type='pattern' url='./marker/pattern-202001.patt'>
-        <a-obj-model id="yukidaruma" src="#yukidaruma-obj" mtl="#yukidaruma-mtl" position="0 0 0" scale="0.5 0.5 0.5" rotation="0 0 0"></a-obj-model>
-    </a-marker>
-    <a-marker preset="kanji">
-    <a-obj-model id="s" src="#s-obj" mtl="#s-mtl" position="0 0 0" scale="0.5 0.5 0.5" rotation="0 0 0"></a-obj-model>
-        <a-text value="Hello YouTube！!！" position="0 1.3 0" align="center"></a-text>
-  </a-marker>
-    <!-- arなのでこんな感じでカメラが必要らしい。 -->
-    <a-entity camera></a-entity>
-</a-scene>
-<!-- ここまででA-Frameおわり -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>らく履き検索</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+    <style>
+        .table-bordered {
+            border-collapse: collapse;
+        }
+        .table-bordered th,
+        .table-bordered td {
+            border: 5px solid #e5e7eb;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow-md">
+        <h1 class="text-2xl font-bold mb-4">らく履き検索</h1>
+        <div class="mb-4">
+            <label for="search" class="block text-sm font-medium text-gray-700">下３桁で検索：</label>
+            <input type="text" id="search" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" placeholder="下３桁を入力">
+        </div>
+        <button id="searchBtn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">検索</button>
+        <div id="result" class="mt-4 overflow-x-auto"></div>
+    </div>
+
+    <script>
+        const shoeData = [
+    {janCode: "4582749729511", itemNumber: "L-303", color: "ブラック", size: "22.5", boxNumber: "46", productName: "婦人らく履き紐シューズ ブラック 22.5", lastThreeDigits: "511"},
+    {janCode: "4582749729528", itemNumber: "L-303", color: "ブラック", size: "23", boxNumber: "46", productName: "婦人らく履き紐シューズ ブラック 23.0", lastThreeDigits: "528"},
+    {janCode: "4582749729535", itemNumber: "L-303", color: "ブラック", size: "23.5", boxNumber: "46", productName: "婦人らく履き紐シューズ ブラック 23.5", lastThreeDigits: "535"},
+    {janCode: "4582749729542", itemNumber: "L-303", color: "ブラック", size: "24", boxNumber: "46", productName: "婦人らく履き紐シューズ ブラック 24.0", lastThreeDigits: "542"},
+    {janCode: "4582749729559", itemNumber: "L-303", color: "ブラック", size: "24.5", boxNumber: "46", productName: "婦人らく履き紐シューズ ブラック 24.5", lastThreeDigits: "559"},
+    {janCode: "4582749729566", itemNumber: "L-303", color: "ベージュ", size: "22.5", boxNumber: "45", productName: "婦人らく履き紐シューズ ベージュ 22.5", lastThreeDigits: "566"},
+    {janCode: "4582749729573", itemNumber: "L-303", color: "ベージュ", size: "23", boxNumber: "45", productName: "婦人らく履き紐シューズ ベージュ 23.0", lastThreeDigits: "573"},
+    {janCode: "4582749729580", itemNumber: "L-303", color: "ベージュ", size: "23.5", boxNumber: "45", productName: "婦人らく履き紐シューズ ベージュ 23.5", lastThreeDigits: "580"},
+    {janCode: "4582749729597", itemNumber: "L-303", color: "ベージュ", size: "24", boxNumber: "45", productName: "婦人らく履き紐シューズ ベージュ 24.0", lastThreeDigits: "597"},
+    {janCode: "4582749729603", itemNumber: "L-303", color: "ベージュ", size: "24.5", boxNumber: "45", productName: "婦人らく履き紐シューズ ベージュ 24.5", lastThreeDigits: "603"},
+    {janCode: "4582749729610", itemNumber: "L-304", color: "ブラック", size: "22.5", boxNumber: "48", productName: "婦人らく履きスリッポンシューズ ブラック 22.5", lastThreeDigits: "610"},
+    {janCode: "4582749729627", itemNumber: "L-304", color: "ブラック", size: "23", boxNumber: "48", productName: "婦人らく履きスリッポンシューズ ブラック 23.0", lastThreeDigits: "627"},
+    {janCode: "4582749729634", itemNumber: "L-304", color: "ブラック", size: "23.5", boxNumber: "48", productName: "婦人らく履きスリッポンシューズ ブラック 23.5", lastThreeDigits: "634"},
+    {janCode: "4582749729641", itemNumber: "L-304", color: "ブラック", size: "24", boxNumber: "48", productName: "婦人らく履きスリッポンシューズ ブラック 24.0", lastThreeDigits: "641"},
+    {janCode: "4582749729658", itemNumber: "L-304", color: "ブラック", size: "24.5", boxNumber: "48", productName: "婦人らく履きスリッポンシューズ ブラック 24.5", lastThreeDigits: "658"},
+    {janCode: "4582749729665", itemNumber: "L-304", color: "ネイビー", size: "22.5", boxNumber: "47", productName: "婦人らく履きスリッポンシューズ ネイビー 22.5", lastThreeDigits: "665"},
+    {janCode: "4582749729672", itemNumber: "L-304", color: "ネイビー", size: "23", boxNumber: "47", productName: "婦人らく履きスリッポンシューズ ネイビー 23.0", lastThreeDigits: "672"},
+    {janCode: "4582749729689", itemNumber: "L-304", color: "ネイビー", size: "23.5", boxNumber: "47", productName: "婦人らく履きスリッポンシューズ ネイビー 23.5", lastThreeDigits: "689"},
+    {janCode: "4582749729696", itemNumber: "L-304", color: "ネイビー", size: "24", boxNumber: "47", productName: "婦人らく履きスリッポンシューズ ネイビー 24.0", lastThreeDigits: "696"},
+    {janCode: "4582749729702", itemNumber: "L-304", color: "ネイビー", size: "24.5", boxNumber: "47", productName: "婦人らく履きスリッポンシューズ ネイビー 24.5", lastThreeDigits: "702"},
+    {janCode: "4582749731118", itemNumber: "L203", color: "ブラック", size: "25", boxNumber: "50", productName: "紳士らく履き紐シューズ ブラック 25", lastThreeDigits: "118"},
+    {janCode: "4582749731125", itemNumber: "L203", color: "ブラック", size: "25.5", boxNumber: "50", productName: "紳士らく履き紐シューズ ブラック 25.5", lastThreeDigits: "125"},
+    {janCode: "4582749731132", itemNumber: "L203", color: "ブラック", size: "26", boxNumber: "50", productName: "紳士らく履き紐シューズ ブラック 26", lastThreeDigits: "132"},
+    {janCode: "4582749731149", itemNumber: "L203", color: "ブラック", size: "26.5", boxNumber: "50", productName: "紳士らく履き紐シューズ ブラック 26.5", lastThreeDigits: "149"},
+    {janCode: "4582749731156", itemNumber: "L203", color: "ブラック", size: "27", boxNumber: "50", productName: "紳士らく履き紐シューズ ブラック 27", lastThreeDigits: "156"},
+    {janCode: "4582749731163", itemNumber: "L203", color: "ブラック", size: "28", boxNumber: "50", productName: "紳士らく履き紐シューズ ブラック 28", lastThreeDigits: "163"},
+    {janCode: "4582749730630", itemNumber: "L203", color: "ネイビー", size: "25", boxNumber: "49", productName: "紳士らく履き紐シューズ ネイビー 25", lastThreeDigits: "630"},
+    {janCode: "4582749730647", itemNumber: "L203", color: "ネイビー", size: "25.5", boxNumber: "49", productName: "紳士らく履き紐シューズ ネイビー 25.5", lastThreeDigits: "647"},
+    {janCode: "4582749730654", itemNumber: "L203", color: "ネイビー", size: "26", boxNumber: "49", productName: "紳士らく履き紐シューズ ネイビー 26", lastThreeDigits: "654"},
+    {janCode: "4582749730661", itemNumber: "L203", color: "ネイビー", size: "26.5", boxNumber: "49", productName: "紳士らく履き紐シューズ ネイビー 26.5", lastThreeDigits: "661"},
+    {janCode: "4582749730678", itemNumber: "L203", color: "ネイビー", size: "27", boxNumber: "49", productName: "紳士らく履き紐シューズ ネイビー 27", lastThreeDigits: "678"},
+    {janCode: "4582749730685", itemNumber: "L203", color: "ネイビー", size: "28", boxNumber: "49", productName: "紳士らく履き紐シューズ ネイビー 28", lastThreeDigits: "685"},
+    {janCode: "4582749730470", itemNumber: "L204", color: "ブラック", size: "25", boxNumber: "52", productName: "紳士らく履きスリッポンシューズ ブラック 25", lastThreeDigits: "470"},
+    {janCode: "4582749730487", itemNumber: "L204", color: "ブラック", size: "25.5", boxNumber: "52", productName: "紳士らく履きスリッポンシューズ ブラック 25.5", lastThreeDigits: "487"},
+    {janCode: "4582749730494", itemNumber: "L204", color: "ブラック", size: "26", boxNumber: "52", productName: "紳士らく履きスリッポンシューズ ブラック 26", lastThreeDigits: "494"},
+    {janCode: "4582749730500", itemNumber: "L204", color: "ブラック", size: "26.5", boxNumber: "52", productName: "紳士らく履きスリッポンシューズ ブラック 26.5", lastThreeDigits: "500"},
+    {janCode: "4582749730517", itemNumber: "L204", color: "ブラック", size: "27", boxNumber: "52", productName: "紳士らく履きスリッポンシューズ ブラック 27", lastThreeDigits: "517"},
+    {janCode: "4582749730524", itemNumber: "L204", color: "ブラック", size: "28", boxNumber: "52", productName: "紳士らく履きスリッポンシューズ ブラック 28", lastThreeDigits: "524"},
+    {janCode: "4582749731057", itemNumber: "L204", color: "グレー", size: "25", boxNumber: "51", productName: "紳士らく履きスリッポンシューズ グレー 25", lastThreeDigits: "057"},
+    {janCode: "4582749731064", itemNumber: "L204", color: "グレー", size: "25.5", boxNumber: "51", productName: "紳士らく履きスリッポンシューズ グレー 25.5", lastThreeDigits: "064"},
+    {janCode: "4582749731071", itemNumber: "L204", color: "グレー", size: "26", boxNumber: "51", productName: "紳士らく履きスリッポンシューズ グレー 26", lastThreeDigits: "071"},
+    {janCode: "4582749731088", itemNumber: "L204", color: "グレー", size: "26.5", boxNumber: "51", productName: "紳士らく履きスリッポンシューズ グレー 26.5", lastThreeDigits: "088"},
+    {janCode: "4582749731095", itemNumber: "L204", color: "グレー", size: "27", boxNumber: "51", productName: "紳士らく履きスリッポンシューズ グレー 27", lastThreeDigits: "095"},
+    {janCode: "4582749731101", itemNumber: "L204", color: "グレー", size: "28", boxNumber: "51", productName: "紳士らく履きスリッポンシューズ グレー 28", lastThreeDigits: "101"}
+];
+
+document.getElementById('searchBtn').addEventListener('click', function() {
+            const searchTerm = document.getElementById('search').value;
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '';
+
+            const filteredData = shoeData.filter(item => item.lastThreeDigits.includes(searchTerm));
+
+            if (filteredData.length > 0) {
+                const table = document.createElement('table');
+                table.className = 'min-w-full divide-y divide-gray-200 table-bordered';
+                table.innerHTML = `
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">JANコード</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">品番</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">色</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">サイズ</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">箱番</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">商品名</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">下３桁</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        ${filteredData.map(item => `
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">${item.janCode}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">${item.itemNumber}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">${item.color}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">${item.size}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">${item.boxNumber}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">${item.productName}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">${item.lastThreeDigits}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                `;
+                resultDiv.appendChild(table);
+            } else {
+                resultDiv.innerHTML = '<p class="text-red-500">該当する商品が見つかりません。</p>';
+            }
+        });
+    </script>
 </body>
 </html>

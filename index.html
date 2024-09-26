@@ -78,13 +78,15 @@
 
 const inputField = document.getElementById('search')
 inputField.addEventListener('input', function() {
+    
             const value = inputField.value;
-
-            // 入力が3桁になったら実行する処理
-            if (value.length === 3) {
             const searchTerm = document.getElementById('search').value;
             const resultDiv = document.getElementById('result');
             resultDiv.innerHTML = '';
+
+            // 入力が3桁になったら実行する処理
+            if (value.length === 3) {
+            
 
             const filteredData = shoeData.filter(item => item.lastThreeDigits.includes(searchTerm));
 

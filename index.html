@@ -131,7 +131,7 @@
         }
 
 
-        const inputField = document.getElementById('search')
+        const inputField = document.getElementById('search');
 inputField.addEventListener('input', function() {
     
             const value = inputField.value;
@@ -191,6 +191,9 @@ inputField.addEventListener('input', function() {
                 resultDiv.innerHTML = '<p class="text-red-500">該当する商品が見つかりません。</p>';
                 currentSearchResult = null;
             }
+        }else{
+            resultDiv.innerHTML = '<p class="text-red-500">該当する商品が見つかりません。</p>';
+            currentSearchResult = null;
         }
         });
         
@@ -209,7 +212,6 @@ inputField.addEventListener('input', function() {
                 
                 savedResultDiv.appendChild(deleteBtn);
                 
-                // const table = createTable(currentSearchResult);
 
                 const table = document.createElement('table');
                 table.className = 'min-w-full divide-y divide-gray-200 table-bordered';
@@ -254,6 +256,11 @@ inputField.addEventListener('input', function() {
                 savedResultDiv.appendChild(table);
                 
                 savedResultsDiv.prepend(savedResultDiv);
+
+                inputField.value = "";
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = '';
+
             }
         });
 

@@ -23,8 +23,8 @@
             <input type="number" id="search" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" placeholder="下３桁を入力">
         </div>
         <button id="saveBtn" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2">保存</button>
-        <button id="allDeletBtn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">全削除</button>
-        <div id="result" class="mt-4 overflow-x-auto"></div>
+        <button id="clearAllBtn" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-2">全削除</button><br>
+        <div id="result" class="mt-4 overflow-x-auto"></div><br>
         <div id="savedResults" class="mt-8"></div>
     </div>
 
@@ -96,7 +96,8 @@
     {janCode: "", itemNumber: "VA302", color: "GY", size: "27", boxNumber: "", productName: "紳士 VA302 GY 27", lastThreeDigits: "899"},
 ];
 
-        let currentSearchResult = null;
+let currentSearchResult = null;
+        let savedResults = [];
 
         function createTable(data) {
             const table = document.createElement('table');
@@ -130,20 +131,115 @@
             return table;
         }
 
+        function saveToLocalStorage() {
+            localStorage.setItem('savedResults', JSON.stringify(savedResults));
+        }
+
+        function loadFromLocalStorage() {
+            const storedResults = localStorage.getItem('savedResults');
+            if (storedResults) {
+                savedResults = JSON.parse(storedResults);
+                displaySavedResults();
+            }
+        }
+
+        function displaySavedResults() {
+            const savedResultsDiv = document.getElementById('savedResults');
+            savedResultsDiv.innerHTML = '';
+            savedResults.forEach((result, index) => {
+                const savedResultDiv = document.createElement('div');
+                savedResultDiv.className = 'mt-4 p-4 bg-gray-100 rounded-lg relative';
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.innerHTML = '×';
+                deleteBtn.className = 'absolute top-2 right-2 text-red-500 font-bold text-xl';
+                deleteBtn.addEventListener('click', function() {
+                    savedResults.splice(index, 1);
+                    saveToLocalStorage();
+                    displaySavedResults();
+                });
+                
+                savedResultDiv.appendChild(deleteBtn);
+                
+                // const searchTermP = document.createElement('p');
+                // searchTermP.textContent = `検索語: "${result.term}"`;
+                // searchTermP.className = 'font-bold mb-2';
+                // savedResultDiv.appendChild(searchTermP);
+                
+                // const table = createTable(result.data);
+                // savedResultDiv.appendChild(table);
+
+                const table = document.createElement('table');
+                table.className = 'min-w-full divide-y divide-gray-200 table-bordered';
+                table.innerHTML = `
+                    <thead class="bg-gray-50">
+                        <tr>
+                            
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">品番</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">色</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">サイズ</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">箱番</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        ${result.map(item => `
+                            <tr>
+                                
+                                <td class="px-6 py-4 whitespace-nowrap">${item.itemNumber}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">${item.color}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">${item.size}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">${item.boxNumber}</td>
+                            </tr>
+                            <tr>
+                                <th colspan="4" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">商品名</th>
+                                
+                            </tr>
+                            <tr>
+                                <td  colspan="4" class="px-6 py-4 whitespace-nowrap">${item.productName}</td>
+                            </tr>
+                            <tr>
+                                <th colspan="4" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">JANコード</th>
+                            </tr>
+                            <tr>
+                                <td  colspan="4" class="px-6 py-4 whitespace-nowrap">${item.janCode}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                `;
+
+                // console.log(table);
+
+                savedResultDiv.appendChild(table);
+                
+                savedResultsDiv.appendChild(savedResultDiv);
+                
+                inputField.value = "";
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = '';
+
+            });
+        }
 
         const inputField = document.getElementById('search');
 inputField.addEventListener('input', function() {
-    
+
+        // document.getElementById('searchBtn').addEventListener('click', function() {
             const value = inputField.value;
             const searchTerm = document.getElementById('search').value;
             const resultDiv = document.getElementById('result');
             resultDiv.innerHTML = '';
 
-            // 入力が3桁になったら実行する処理
-            if (value.length === 3) {
-            
-
             const filteredData = shoeData.filter(item => item.lastThreeDigits.includes(searchTerm));
+
+            // if (filteredData.length > 0) {
+            //     const table = createTable(filteredData);
+            //     resultDiv.appendChild(table);
+            //     currentSearchResult = { term: searchTerm, data: filteredData };
+            // } else {
+            //     resultDiv.innerHTML = '<p class="text-red-500">該当する商品が見つかりません。</p>';
+            //     currentSearchResult = null;
+            // }
 
             if (filteredData.length > 0) {
                 const table = document.createElement('table');
@@ -186,89 +282,32 @@ inputField.addEventListener('input', function() {
                 `;
                 resultDiv.appendChild(table);
                 currentSearchResult = filteredData;
+                // console.log(filteredData);
                 
             } else {
                 resultDiv.innerHTML = '<p class="text-red-500">該当する商品が見つかりません。</p>';
                 currentSearchResult = null;
             }
-        }else{
-            resultDiv.innerHTML = '<p class="text-red-500">該当する商品が見つかりません。</p>';
-            currentSearchResult = null;
-        }
-        });
         
+
+        });
+
         document.getElementById('saveBtn').addEventListener('click', function() {
             if (currentSearchResult) {
-                const savedResultsDiv = document.getElementById('savedResults');
-                const savedResultDiv = document.createElement('div');
-                savedResultDiv.className = 'mt-4 p-4 bg-gray-100 rounded-lg relative';
-                
-                const deleteBtn = document.createElement('button');
-                deleteBtn.innerHTML = '×';
-                deleteBtn.className = 'absolute top-2 right-2 text-red-500 font-bold text-xl';
-                deleteBtn.addEventListener('click', function() {
-                    savedResultsDiv.removeChild(savedResultDiv);
-                });
-                
-                savedResultDiv.appendChild(deleteBtn);
-                
-
-                const table = document.createElement('table');
-                table.className = 'min-w-full divide-y divide-gray-200 table-bordered';
-                table.innerHTML = `
-                    <thead class="bg-gray-50">
-                        <tr>
-                            
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">品番</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">色</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">サイズ</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">箱番</th>
-                            
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        ${currentSearchResult.map(item => `
-                            <tr>
-                                
-                                <td class="px-6 py-4 whitespace-nowrap">${item.itemNumber}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">${item.color}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">${item.size}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">${item.boxNumber}</td>
-                            </tr>
-                            <tr>
-                                <th colspan="4" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">商品名</th>
-                                
-                            </tr>
-                            <tr>
-                                <td  colspan="4" class="px-6 py-4 whitespace-nowrap">${item.productName}</td>
-                            </tr>
-                            <tr>
-                                <th colspan="4" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">JANコード</th>
-                            </tr>
-                            <tr>
-                                <td  colspan="4" class="px-6 py-4 whitespace-nowrap">${item.janCode}</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                `;
-
-
-                savedResultDiv.appendChild(table);
-                
-                savedResultsDiv.prepend(savedResultDiv);
-
-                inputField.value = "";
-                const resultDiv = document.getElementById('result');
-                resultDiv.innerHTML = '';
-
+                savedResults.unshift(currentSearchResult);
+                saveToLocalStorage();
+                displaySavedResults();
             }
         });
 
-        document.getElementById('allDeletBtn').addEventListener('click', function() {
-            const savedResultsDiv = document.getElementById('savedResults');
-            savedResultsDiv.innerHTML = "";
+        document.getElementById('clearAllBtn').addEventListener('click', function() {
+            savedResults = [];
+            saveToLocalStorage();
+            displaySavedResults();
         });
 
+        // 初期化時に保存された結果を読み込む
+        loadFromLocalStorage();
     </script>
 </body>
 </html>
